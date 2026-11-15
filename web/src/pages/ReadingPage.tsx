@@ -2,6 +2,7 @@ import { useId, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import NatalSheet from "../components/NatalSheet";
 import Shell from "../components/Shell";
+import { chartToSheet } from "../lib/chartSheet";
 import { readNatalSession } from "../lib/natal";
 
 const MONTHS = [
@@ -56,7 +57,8 @@ export default function ReadingPage() {
     );
   }
 
-  const { request, withHouses } = session;
+  const { request, withHouses, chart } = session;
+  const sheet = chart ? chartToSheet(chart, withHouses) : null;
 
   return (
     <Shell title="Interpretación">
@@ -70,7 +72,7 @@ export default function ReadingPage() {
         </header>
 
         <section className="chart-slot" aria-label="Carta natal">
-          <NatalSheet />
+          {sheet ? <NatalSheet data={sheet} /> : <p className="prose">No pudimos armar la carta.</p>}
         </section>
 
         <p className="prose">

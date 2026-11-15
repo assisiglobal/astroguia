@@ -11,12 +11,20 @@ export interface SheetBody extends SheetPoint {
   retro?: boolean;
 }
 
+export interface SheetAspect {
+  from: string;
+  to: string;
+  kind: "conjunction" | "sextile" | "square" | "trine" | "opposition";
+}
+
 export interface NatalSheetData {
   name?: string;
   asc: SheetPoint;
   mc: SheetPoint;
   houses?: SheetPoint[];
   bodies?: SheetBody[];
+  aspects?: SheetAspect[];
+  frame?: "houses" | "zodiac";
 }
 
 /** Carta fija del generador de ejemplo. Emparejarla con el endpoint queda para después. */
@@ -114,6 +122,13 @@ const ASPECTS: [number, string, number][] = [
   [150, "#3DBB4A", 3],
   [180, "#E8352E", 7],
 ];
+const ASPECT_COLOR: Record<SheetAspect["kind"], string> = {
+  sextile: "#46B3E6",
+  trine: "#46B3E6",
+  square: "#E8352E",
+  opposition: "#E8352E",
+  conjunction: "#E8352E",
+};
 const MAIN = ["sun", "moon", "mer", "ven", "mar", "jup", "sat", "ura", "nep", "plu"];
 const R1 = 470;
 const R2 = 345;
@@ -228,13 +243,16 @@ export default function NatalSheet({ data = PREVIEW_CHART, mode = "still", settl
   const orbit = mode === "orbit";
   const aspectsVisible = !orbit || showAspects;
   const spinRef = usePlanetSpin(orbit, settle);
+  const zodiac = data.frame === "zodiac";
   const asc = longitude(data.asc);
   const midheaven = longitude(data.mc);
   const imum = (midheaven + 180) % 360;
   const descendant = (asc + 180) % 360;
-  const cusps = data.houses
-    ? data.houses.map(longitude)
-    : [asc, ...thirds(asc, imum), imum, ...thirds(imum, descendant), descendant, ...thirds(descendant, midheaven), midheaven, ...thirds(midheaven, asc)];
+  const cusps = zodiac
+    ? []
+    : data.houses
+      ? data.houses.map(longitude)
+      : [asc, ...thirds(asc, imum), imum, ...thirds(imum, descendant), descendant, ...thirds(descendant, midheaven), midheaven, ...thirds(midheaven, asc)];
 
   let ticks = "";
   for (let degree = 0; degree < 360; degree += 1) {
@@ -259,23 +277,35 @@ export default function NatalSheet({ data = PREVIEW_CHART, mode = "still", settl
   }
 
   const aspects: { d: string; color: string }[] = [];
-  const main = placed.filter((item) => MAIN.includes(item.body.id));
-  for (let i = 0; i < main.length; i += 1) {
-    for (let j = i + 1; j < main.length; j += 1) {
-      let gap = Math.abs(main[i].longitude - main[j].longitude);
-      gap = gap > 180 ? 360 - gap : gap;
-      ASPECTS.forEach(([angle, color, orb]) => {
-        if (Math.abs(gap - angle) <= orb) {
-          aspects.push({
-            d: `M${pair(polar(R3, main[i].longitude, asc))}L${pair(polar(R3, main[j].longitude, asc))}`,
-            color,
-          });
-        }
+  if (data.aspects) {
+    for (const aspect of data.aspects) {
+      const from = placed.find((item) => item.body.id === aspect.from);
+      const to = placed.find((item) => item.body.id === aspect.to);
+      if (!from || !to) continue;
+      aspects.push({
+        d: `M${pair(polar(R3, from.longitude, asc))}L${pair(polar(R3, to.longitude, asc))}`,
+        color: ASPECT_COLOR[aspect.kind],
       });
+    }
+  } else {
+    const main = placed.filter((item) => MAIN.includes(item.body.id));
+    for (let i = 0; i < main.length; i += 1) {
+      for (let j = i + 1; j < main.length; j += 1) {
+        let gap = Math.abs(main[i].longitude - main[j].longitude);
+        gap = gap > 180 ? 360 - gap : gap;
+        ASPECTS.forEach(([angle, color, orb]) => {
+          if (Math.abs(gap - angle) <= orb) {
+            aspects.push({
+              d: `M${pair(polar(R3, main[i].longitude, asc))}L${pair(polar(R3, main[j].longitude, asc))}`,
+              color,
+            });
+          }
+        });
+      }
     }
   }
 
-  const wings = [asc, midheaven].flatMap((longitudeValue) => {
+  const wings = zodiac ? [] : [asc, midheaven].flatMap((longitudeValue) => {
     const tip = polar(R1 - 2, longitudeValue, asc);
     const length = Math.hypot(500 - tip[0], 500 - tip[1]);
     const ux = (500 - tip[0]) / length;
