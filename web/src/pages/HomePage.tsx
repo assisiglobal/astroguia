@@ -3,6 +3,14 @@ import NatalWheel from "../components/NatalWheel";
 import Shell from "../components/Shell";
 import { featurePath, useFeatures, type Feature } from "../lib/features";
 
+const SKY: [number, number, number][] = [
+  [6, 8, 0.35], [14, 18, 0.18], [22, 6, 0.22], [31, 22, 0.4], [40, 9, 0.16],
+  [52, 16, 0.28], [63, 5, 0.18], [71, 20, 0.42], [82, 8, 0.2], [91, 18, 0.3],
+  [8, 36, 0.16], [96, 34, 0.24], [4, 58, 0.32], [97, 62, 0.18], [11, 78, 0.2],
+  [88, 84, 0.36], [18, 92, 0.16], [46, 94, 0.22], [74, 90, 0.18], [33, 42, 0.14],
+  [58, 38, 0.16], [27, 64, 0.14], [68, 70, 0.2], [84, 48, 0.14], [42, 72, 0.16],
+];
+
 function RailItem({ feature }: { feature: Feature }) {
   const body = (
     <>
@@ -47,7 +55,12 @@ export default function HomePage() {
     >
       <div className="hero">
         <div className="hero-sky">
-          <NatalWheel mode="live" />
+          <svg className="sky-stars" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            {SKY.map(([x, y, r], index) => (
+              <circle key={`${x}-${y}`} cx={x} cy={y} r={r} style={{ animationDelay: `${(index % 7) * 0.4}s` }} />
+            ))}
+          </svg>
+          <NatalWheel mode="live" homeSky />
         </div>
         <div className="hero-copy">
           <p className="eyebrow">El cielo de tu nacimiento</p>

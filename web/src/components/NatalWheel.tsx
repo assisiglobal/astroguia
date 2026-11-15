@@ -1,23 +1,48 @@
+import sol from "../assets/iconos/color/sol.png";
+import luna from "../assets/iconos/color/luna.png";
+import mercurio from "../assets/iconos/color/mercurio.png";
+import venus from "../assets/iconos/color/venus.png";
+import marte from "../assets/iconos/color/marte.png";
+import jupiter from "../assets/iconos/color/jupiter.png";
+import saturno from "../assets/iconos/color/saturno.png";
+import urano from "../assets/iconos/color/urano.png";
+import neptuno from "../assets/iconos/color/neptuno.png";
+import pluton from "../assets/iconos/color/pluton.png";
+import aries from "../assets/constelaciones/aries.png";
+import tauro from "../assets/constelaciones/tauro.png";
+import geminis from "../assets/constelaciones/geminis.png";
+import cancer from "../assets/constelaciones/cancer.png";
+import leo from "../assets/constelaciones/leo.png";
+import virgo from "../assets/constelaciones/virgo.png";
+import libra from "../assets/constelaciones/libra.png";
+import escorpio from "../assets/constelaciones/escorpio.png";
+import sagitario from "../assets/constelaciones/sagitario.png";
+import capricornio from "../assets/constelaciones/capricornio.png";
+import acuario from "../assets/constelaciones/acuario.png";
+import piscis from "../assets/constelaciones/piscis.png";
+
 type WheelMode = "live" | "assemble" | "still";
 
 interface NatalWheelProps {
   mode?: WheelMode;
   showHouses?: boolean;
+  homeSky?: boolean;
 }
 
 const SIGNS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+const FIGURES = [aries, tauro, geminis, cancer, leo, virgo, libra, escorpio, sagitario, capricornio, acuario, piscis];
 const CUSPS = [0, 32, 61, 92, 124, 156, 180, 214, 244, 274, 304, 334];
 const PLANETS = [
-  { glyph: "☉", angle: 318, r: 102, label: "03°" },
-  { glyph: "☽", angle: 52, r: 112, label: "08°" },
-  { glyph: "☿", angle: 336, r: 88, label: "01°" },
-  { glyph: "♀", angle: 148, r: 104, label: "19°" },
-  { glyph: "♂", angle: 24, r: 94, label: "16°" },
-  { glyph: "♃", angle: 86, r: 78, label: "19°" },
-  { glyph: "♄", angle: 196, r: 108, label: "13°" },
-  { glyph: "♅", angle: 232, r: 84, label: "17°" },
-  { glyph: "♆", angle: 268, r: 72, label: "16°" },
-  { glyph: "♇", angle: 162, r: 68, label: "17°" },
+  { id: "sol", icon: sol, glyph: "☉", angle: 318, r: 102, homeR: 106, label: "03°" },
+  { id: "luna", icon: luna, glyph: "☽", angle: 52, r: 112, homeR: 106, label: "08°" },
+  { id: "mercurio", icon: mercurio, glyph: "☿", angle: 336, r: 88, homeR: 106, label: "01°" },
+  { id: "venus", icon: venus, glyph: "♀", angle: 148, r: 104, homeR: 106, label: "19°" },
+  { id: "marte", icon: marte, glyph: "♂", angle: 24, r: 94, homeR: 106, label: "16°" },
+  { id: "jupiter", icon: jupiter, glyph: "♃", angle: 86, r: 78, homeR: 106, label: "19°" },
+  { id: "saturno", icon: saturno, glyph: "♄", angle: 196, r: 108, homeR: 106, label: "13°" },
+  { id: "urano", icon: urano, glyph: "♅", angle: 232, r: 84, homeR: 106, label: "17°" },
+  { id: "neptuno", icon: neptuno, glyph: "♆", angle: 268, r: 72, homeR: 106, label: "16°" },
+  { id: "pluton", icon: pluton, glyph: "♇", angle: 162, r: 68, homeR: 106, label: "17°" },
 ];
 const ASPECTS: [number, number][] = [
   [0, 1],
@@ -39,6 +64,13 @@ const CONSTELLATIONS = [
   [[168, 14], [180, 26], [194, 16]],
   [[150, 338], [166, 326], [182, 340]],
 ];
+const HOME_STARS: [number, number, number][] = [
+  [-40, -30, 0.7], [12, -42, 1.1], [80, -36, 0.5], [250, -46, 0.8], [330, -28, 1.2], [400, -18, 0.6],
+  [-48, 40, 0.6], [430, 24, 0.9], [-46, 140, 1], [448, 120, 0.5], [-50, 250, 0.7], [440, 230, 1.1],
+  [-36, 340, 0.5], [420, 330, 0.8], [-20, 410, 0.9], [40, 430, 0.6], [130, 448, 1.1], [220, 440, 0.5],
+  [300, 452, 0.8], [380, 420, 0.6], [190, 118, 0.35], [150, 200, 0.4], [230, 168, 0.3], [168, 250, 0.35],
+  [120, 160, 0.3], [240, 230, 0.4], [200, 86, 0.3], [96, 300, 0.4], [280, 310, 0.35], [210, 300, 0.3],
+];
 
 const CX = 180;
 const CY = 180;
@@ -57,14 +89,32 @@ function wedge(start: number, end: number, radius: number): string {
   return `M ${CX} ${CY} L ${x0} ${y0} A ${radius} ${radius} 0 ${large} 0 ${x1} ${y1} Z`;
 }
 
-export default function NatalWheel({ mode = "still", showHouses = true }: NatalWheelProps) {
+export default function NatalWheel({ mode = "still", showHouses = true, homeSky = false }: NatalWheelProps) {
   return (
-    <svg className={`natal-chart natal-${mode}`} viewBox="0 0 360 360" role="img" aria-hidden="true">
-      <g className="constellations">
-        {CONSTELLATIONS.map((star, index) => (
-          <polyline key={index} points={star.map((point) => point.join(",")).join(" ")} />
-        ))}
-      </g>
+    <svg
+      className={`natal-chart natal-${mode}${homeSky ? " natal-home" : ""}`}
+      viewBox={homeSky ? "-58 -58 476 476" : "0 0 360 360"}
+      role="img"
+      aria-hidden="true"
+    >
+      {homeSky
+        ? HOME_STARS.map(([x, y, radius], index) => (
+            <circle
+              key={`star-${x}-${y}`}
+              className="home-star"
+              cx={x}
+              cy={y}
+              r={radius}
+              style={{ animationDelay: `${(index % 8) * 0.35}s` }}
+            />
+          ))
+        : (
+            <g className="constellations">
+              {CONSTELLATIONS.map((star, index) => (
+                <polyline key={index} points={star.map((point) => point.join(",")).join(" ")} />
+              ))}
+            </g>
+          )}
 
       <circle className="ring-draw outer" cx={CX} cy={CY} r={154} />
       <circle className="band" cx={CX} cy={CY} r={141} />
@@ -109,47 +159,73 @@ export default function NatalWheel({ mode = "still", showHouses = true }: NatalW
       {mode === "live"
         ? null
         : ASPECTS.map(([from, to], index) => {
-        const a = PLANETS[from];
-        const b = PLANETS[to];
-        const [x1, y1] = polar(a.angle, a.r - 12);
-        const [x2, y2] = polar(b.angle, b.r - 12);
-        return (
-          <line
-            key={`${from}-${to}`}
-            className={index % 2 ? "aspect lilac" : "aspect"}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            style={{ animationDelay: `${2.05 + (index % 5) * 0.06}s` }}
-          />
-        );
-      })}
+            const a = PLANETS[from];
+            const b = PLANETS[to];
+            const [x1, y1] = polar(a.angle, a.r - 12);
+            const [x2, y2] = polar(b.angle, b.r - 12);
+            return (
+              <line
+                key={`${from}-${to}`}
+                className={index % 2 ? "aspect lilac" : "aspect"}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                style={{ animationDelay: `${2.05 + (index % 5) * 0.06}s` }}
+              />
+            );
+          })}
 
-      {PLANETS.map((planet, index) => (
-        <g
-          key={planet.glyph}
-          className="sky-planet"
-          style={{
-            transformOrigin: "180px 180px",
-            ["--to" as string]: `${-planet.angle}deg`,
-            ["--from" as string]: `${-planet.angle - 210 - index * 16}deg`,
-            ["--i" as string]: String(index),
-            animationDelay: `${0.45 + index * 0.07}s`,
-          }}
-        >
-          <g transform={`translate(${180 - planet.r} 180)`}>
-            <g className="sky-upright" style={{ animationDelay: `${0.45 + index * 0.07}s` }}>
-              <text className="glyph" textAnchor="middle" dominantBaseline="central">
-                {planet.glyph}
-              </text>
-              <text className="deg" y="13" textAnchor="middle">
-                {planet.label}
-              </text>
+      {homeSky
+        ? FIGURES.map((figure, index) => {
+            const [x, y] = polar(index * 30 + 15, 206);
+            const size = 48;
+            return (
+              <image
+                key={figure}
+                className="sky-figure"
+                href={figure}
+                x={x - size / 2}
+                y={y - size / 2}
+                width={size}
+                height={size}
+              />
+            );
+          })
+        : null}
+
+      {PLANETS.map((planet, index) => {
+        const radius = homeSky ? planet.homeR : planet.r;
+        const iconSize = 13;
+        return (
+          <g
+            key={planet.id}
+            className="sky-planet"
+            style={{
+              transformOrigin: "180px 180px",
+              ["--to" as string]: `${-planet.angle}deg`,
+              ["--from" as string]: `${-planet.angle - 210 - index * 16}deg`,
+              ["--i" as string]: String(index),
+              animationDelay: `${0.45 + index * 0.07}s`,
+            }}
+          >
+            <g transform={`translate(${180 - radius} 180)`}>
+              <g className="sky-upright" style={{ animationDelay: `${0.45 + index * 0.07}s` }}>
+                {homeSky ? (
+                  <image className="planet-icon" href={planet.icon} x={-iconSize / 2} y={-iconSize / 2} width={iconSize} height={iconSize} />
+                ) : (
+                  <text className="glyph" textAnchor="middle" dominantBaseline="central">
+                    {planet.glyph}
+                  </text>
+                )}
+                <text className="deg" y={homeSky ? 10 : 13} textAnchor="middle">
+                  {planet.label}
+                </text>
+              </g>
             </g>
           </g>
-        </g>
-      ))}
+        );
+      })}
 
       {showHouses
         ? (

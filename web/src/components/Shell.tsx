@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { Link } from "react-router";
+import marca from "../assets/logo/marca.svg";
 import { applyThemeColor, useTheme } from "../lib/theme";
 
 interface ShellProps {
@@ -32,8 +33,12 @@ export default function Shell({ title, children, admin = false, wide = false, ho
   return (
     <div className={["shell", wide ? "wide" : "", home ? "shell-home" : ""].filter(Boolean).join(" ")}>
       <header className="topbar">
-        <Link to="/" className="wordmark">
-          Astroguía
+        <Link to="/" className="brand" aria-label="Astroguía">
+          <img className="brand-mark" src={marca} alt="" />
+          <span className="brand-text">
+            <span className="brand-name">AstroGuía</span>
+            <span className="brand-line">Estudio astrológico, místico y predictivo</span>
+          </span>
         </Link>
         {admin ? (
           <span className="panel-mark">Panel</span>
