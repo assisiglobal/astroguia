@@ -1,23 +1,8 @@
 import { useId, useState, type ReactNode } from "react";
 import { Link } from "react-router";
-import NatalWheel from "../components/NatalWheel";
+import NatalSheet from "../components/NatalSheet";
 import Shell from "../components/Shell";
-import { readNatalSession, type NatalAngle } from "../lib/natal";
-
-const SIGNS: Record<string, string> = {
-  aries: "Aries",
-  taurus: "Tauro",
-  gemini: "Géminis",
-  cancer: "Cáncer",
-  leo: "Leo",
-  virgo: "Virgo",
-  libra: "Libra",
-  scorpio: "Escorpio",
-  sagittarius: "Sagitario",
-  capricorn: "Capricornio",
-  aquarius: "Acuario",
-  pisces: "Piscis",
-};
+import { readNatalSession } from "../lib/natal";
 
 const MONTHS = [
   "enero",
@@ -38,13 +23,6 @@ function formatDate(value: string): string {
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) return value;
   return `${day} de ${MONTHS[month - 1]} de ${year}`;
-}
-
-function formatAngle(angle?: NatalAngle): string {
-  if (!angle?.sign || angle.degree == null) return "";
-  const sign = SIGNS[angle.sign] ?? angle.sign;
-  const degree = angle.degree.toLocaleString("es-AR", { maximumFractionDigits: 2 });
-  return `${sign} ${degree}°`;
 }
 
 function Fold({ title, children }: { title: string; children: ReactNode }) {
@@ -78,9 +56,7 @@ export default function ReadingPage() {
     );
   }
 
-  const { request, withHouses, chart } = session;
-  const asc = formatAngle(chart?.angles?.asc);
-  const mc = formatAngle(chart?.angles?.mc);
+  const { request, withHouses } = session;
 
   return (
     <Shell title="Interpretación">
@@ -93,16 +69,8 @@ export default function ReadingPage() {
           <p>{withHouses && request.time ? `Calculada a las ${request.time}` : "Sin hora de nacimiento"}</p>
         </header>
 
-        <section className="chart-slot" aria-label="Lugar reservado para tu carta">
-          <NatalWheel mode="still" showHouses={withHouses} />
-          <p>Tu carta va a verse aquí</p>
-          {withHouses ? (
-            <ul className="chart-facts">
-              <li>Casas</li>
-              <li>Ascendente{asc ? ` · ${asc}` : ""}</li>
-              <li>Medio cielo{mc ? ` · ${mc}` : ""}</li>
-            </ul>
-          ) : null}
+        <section className="chart-slot" aria-label="Carta natal">
+          <NatalSheet />
         </section>
 
         <p className="prose">

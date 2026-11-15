@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import NatalWheel from "../components/NatalWheel";
+import NatalSheet from "../components/NatalSheet";
 import { NatalError, postNatal, readNatalSession, saveNatalSession } from "../lib/natal";
 
 function wait(ms: number) {
@@ -10,6 +10,8 @@ function wait(ms: number) {
 export default function LoadingPage() {
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
+  const [aspectsOn, setAspectsOn] = useState(false);
+  const [marked, setMarked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,7 +49,13 @@ export default function LoadingPage() {
       }
       saveNatalSession({ ...session, chart });
       setClosing(true);
-      await wait(700);
+      await wait(950);
+      if (cancelled) return;
+      setAspectsOn(true);
+      await wait(1200);
+      if (cancelled) return;
+      setMarked(true);
+      await wait(850);
       if (!cancelled) navigate("/lectura", { replace: true });
     }
 
@@ -59,11 +67,11 @@ export default function LoadingPage() {
   }, [navigate]);
 
   return (
-    <div className={closing ? "loading-screen is-closing" : "loading-screen"}>
+    <div className={["loading-screen", closing ? "is-closing" : "", marked ? "is-done" : ""].filter(Boolean).join(" ")}>
       <div className="wheel">
-        <NatalWheel mode="assemble" />
+        <NatalSheet mode="orbit" settle={closing} showAspects={aspectsOn} />
       </div>
-      <h1 aria-live="polite">{closing ? "Listo" : "Estamos leyendo tu cielo"}</h1>
+      <h1 aria-live="polite">{marked ? "Listo" : "Estamos leyendo tu cielo"}</h1>
       {error ? (
         <div className="stack loading-error">
           <p role="alert">{error}</p>

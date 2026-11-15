@@ -349,29 +349,40 @@ html[data-theme="day"] .badge { color: #6b3a5a; }
 .soon-check { display: flex; align-items: center; gap: 0.45rem; font-weight: 600; color: #333; }
 
 .chart-slot {
-  position: relative;
-  min-height: 16rem;
-  border-radius: 1.4rem;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.6rem;
-  padding: 0.5rem 0.5rem 1.1rem;
-  text-align: center;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--lilac) 28%, transparent), transparent 58%),
-    color-mix(in srgb, var(--surface) 70%, transparent);
+  justify-content: center;
 }
-.chart-slot .natal-chart { width: min(100%, 22rem); margin-top: -0.5rem; }
-.chart-slot > p {
+.natal-sheet {
+  width: min(100%, 36rem);
+  --sheet-paper: #fff;
+}
+.loading-screen .natal-sheet {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+}
+.chart-slot .natal-sheet {
   position: relative;
-  color: var(--ink);
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
+  background: transparent;
+  --sheet-paper: transparent;
 }
-.chart-slot > p { color: var(--muted); font-size: 1.2rem; }
+.chart-slot .natal-sheet svg { position: relative; z-index: 1; }
+html[data-theme="night"] .chart-slot .natal-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 92%;
+  height: 92%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 16px 3px rgba(255, 255, 255, 0.55),
+    0 0 42px 10px rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}
+.natal-sheet svg { display: block; width: 100%; height: auto; }
 .chart-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; font-weight: 600; }
 .folds { border-top: 1px solid var(--line); }
 .fold { border-bottom: 1px solid var(--line); }
@@ -417,10 +428,40 @@ html[data-theme="day"] .badge { color: #6b3a5a; }
     #3a2240;
 }
 .wheel {
-  width: min(92vw, 34rem);
+  width: min(92vw, 34rem, 68dvh);
   transition: transform 0.8s ease, opacity 0.8s ease;
 }
-.loading-screen.is-closing .wheel { transform: scale(0.94); opacity: 0.72; }
+.loading-screen.is-closing .wheel { transform: none; }
+.sheet-aspect.is-drawing {
+  stroke-dasharray: 480;
+  stroke-dashoffset: 480;
+  animation: draw 0.6s ease forwards;
+}
+.loading-screen.is-done .natal-sheet {
+  position: relative;
+  background: transparent;
+  --sheet-paper: transparent;
+}
+.loading-screen.is-done .natal-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 94%;
+  height: 94%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 18px 4px rgba(255, 255, 255, 0.95),
+    0 0 58px 16px rgba(255, 255, 255, 0.62);
+  pointer-events: none;
+  animation: halo-in 0.45s ease;
+}
+@keyframes halo-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 .shell-home {
   overflow-x: clip;
@@ -637,6 +678,7 @@ html[data-theme="day"] .sign { fill: #6b3a5a; }
   }
   .natal-assemble .sky-planet, .natal-live .sky-planet, .natal-still .sky-planet { transform: rotate(var(--to)); }
   .natal-assemble .sky-upright, .natal-live .sky-upright, .natal-still .sky-upright { transform: rotate(calc(var(--to) * -1)); }
-  .natal-assemble .ring-draw, .natal-assemble .aspect, .natal-assemble .cusp { stroke-dashoffset: 0; }
+  .natal-assemble .ring-draw, .natal-assemble .aspect, .natal-assemble .cusp,
+  .sheet-aspect.is-drawing { stroke-dashoffset: 0; }
   .natal-assemble .sign, .natal-assemble .angle-mark, .natal-assemble .house-no { opacity: 1; }
 }
