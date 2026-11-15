@@ -67,7 +67,7 @@ export function readNatalSession(): NatalSession | null {
 export async function postNatal(request: NatalRequest, signal?: AbortSignal): Promise<NatalChart> {
   let response: Response;
   try {
-    response = await fetch("http://localhost:3001/api/natal", {
+    response = await fetch("/api/natal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(natalPayload(request)),

@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router";
 import Shell from "../components/Shell";
-import { matchesForCity, searchCityNames } from "../lib/cities";
+import { cityLabel, matchesForCity, searchCities, type CityMatch } from "../lib/cities";
 import { useFeatures } from "../lib/features";
 import { saveNatalSession } from "../lib/natal";
 
@@ -13,14 +13,15 @@ export default function NatalFormPage() {
   const [date, setDate] = useState("");
   const [query, setQuery] = useState("");
   const [province, setProvince] = useState<string | null>(null);
-  const [timeMode, setTimeMode] = useState<"unknown" | "exact" | "noon">("unknown");
+  const [timeMode, setTimeMode] = useState<"unknown" | "exact">("exact");
   const [time, setTime] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const exact = useMemo(() => matchesForCity(query), [query]);
   const unique = exact.length === 1 ? exact[0] : null;
   const repeated = exact.length > 1 ? exact : null;
-  const suggestions = unique || repeated ? [] : searchCityNames(query);
+  const suggestions = cityOpen ? searchCities(query) : [];
   const resolvedProvince = unique
     ? unique.province
     : repeated && province && repeated.some((item) => item.province === province)
@@ -30,11 +31,17 @@ export default function NatalFormPage() {
 
   if (natal && natal.status !== "on") return <Navigate to="/" replace />;
 
+  function chooseCity(item: CityMatch) {
+    setQuery(item.city);
+    setProvince(item.province);
+    setCityOpen(false);
+    setError(null);
+  }
+
   function onQueryKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter" && suggestions.length > 0) {
       event.preventDefault();
-      setQuery(suggestions[0]);
-      setProvince(null);
+      chooseCity(suggestions[0]);
     }
   }
 
@@ -52,7 +59,7 @@ export default function NatalFormPage() {
       setError("Pon la hora.");
       return;
     }
-    const sentTime = timeMode === "noon" ? "12:00" : timeMode === "exact" ? time : undefined;
+    const sentTime = timeMode === "exact" ? time : undefined;
     const trimmed = name.trim();
     saveNatalSession({
       request: {
@@ -71,6 +78,9 @@ export default function NatalFormPage() {
   return (
     <Shell title="Carta natal">
       <form className="stack stack-lg" onSubmit={onSubmit} noValidate>
+        <Link className="text-link" to="/">
+          Volver al inicio
+        </Link>
         <div className="intro-block">
           <h1>Tu carta natal</h1>
           <p>Cuéntanos cuándo y dónde naciste. El país queda en Argentina.</p>
@@ -88,14 +98,17 @@ export default function NatalFormPage() {
           />
         </label>
 
-        <label className="field" htmlFor="fecha">
+        <label className="field field-date" htmlFor="fecha">
           <span>Fecha de nacimiento</span>
           <input id="fecha" name="fecha" type="date" required value={date} onChange={(event) => setDate(event.target.value)} />
         </label>
 
-        <p className="fixed-country">
-          <span>País</span> Argentina
-        </p>
+        <label className="field" htmlFor="pais">
+          <span>País</span>
+          <select id="pais" name="pais" value="Argentina" disabled>
+            <option value="Argentina">Argentina (próximamente otros países)</option>
+          </select>
+        </label>
 
         <div className="field">
           <label htmlFor="ciudad">Ciudad</label>
@@ -103,7 +116,7 @@ export default function NatalFormPage() {
             id="ciudad"
             name="ciudad"
             role="combobox"
-            aria-expanded={suggestions.length > 0}
+            aria-expanded={cityOpen && suggestions.length > 0}
             aria-autocomplete="list"
             aria-controls="ciudades"
             value={query}
@@ -111,38 +124,38 @@ export default function NatalFormPage() {
             autoCorrect="off"
             spellCheck={false}
             placeholder="Busca tu ciudad"
+            onFocus={() => setCityOpen(true)}
+            onBlur={() => setCityOpen(false)}
             onChange={(event) => {
               setQuery(event.target.value);
               setProvince(null);
+              setCityOpen(true);
               setError(null);
             }}
             onKeyDown={onQueryKeyDown}
           />
-          {suggestions.length > 0 ? (
+          {cityOpen && suggestions.length > 0 ? (
             <ul className="suggestions" id="ciudades" role="listbox">
-              {suggestions.map((city) => (
-                <li key={city}>
+              {suggestions.map((item) => (
+                <li key={`${item.city}-${item.province}`}>
                   <button
                     type="button"
                     role="option"
-                    onClick={() => {
-                      setQuery(city);
-                      setProvince(null);
-                      setError(null);
-                    }}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => chooseCity(item)}
                   >
-                    {city}
+                    {cityLabel(item)}
                   </button>
                 </li>
               ))}
             </ul>
           ) : null}
-          {unique && resolvedProvince ? (
+          {resolvedProvince && (unique || repeated) ? (
             <p className="confirm">
               <span>Provincia</span> {resolvedProvince}
             </p>
           ) : null}
-          {repeated ? (
+          {repeated && !resolvedProvince ? (
             <div className="stack">
               <p id="province-help">Hay más de una {repeated[0].city}. Elige la provincia.</p>
               <div className="province-pick" role="group" aria-describedby="province-help" aria-label="Elige la provincia">
@@ -167,38 +180,30 @@ export default function NatalFormPage() {
 
         <fieldset className="stack">
           <legend>Hora de nacimiento</legend>
-          <label className="field" htmlFor="hora">
-            <span>Hora</span>
+          <label className="field field-time" htmlFor="hora">
             <input
               id="hora"
               name="hora"
               type="time"
-              value={timeMode === "noon" ? "12:00" : time}
-              disabled={timeMode !== "exact"}
-              onFocus={() => setTimeMode("exact")}
+              aria-label="Hora"
+              value={time}
+              disabled={timeMode === "unknown"}
               onChange={(event) => {
                 setTime(event.target.value);
-                setTimeMode("exact");
                 setError(null);
               }}
             />
           </label>
           <label className="choice">
             <input
-              type="radio"
-              name="hora-modo"
+              type="checkbox"
               checked={timeMode === "unknown"}
-              onChange={() => setTimeMode("unknown")}
+              onChange={(event) => {
+                setTimeMode(event.target.checked ? "unknown" : "exact");
+                setError(null);
+              }}
             />
             <span>No sé mi hora, calcular sin casas</span>
-          </label>
-          <label className="choice">
-            <input type="radio" name="hora-modo" checked={timeMode === "exact"} onChange={() => setTimeMode("exact")} />
-            <span>Poner la hora</span>
-          </label>
-          <label className="choice">
-            <input type="radio" name="hora-modo" checked={timeMode === "noon"} onChange={() => setTimeMode("noon")} />
-            <span>Calcular con las 12</span>
           </label>
         </fieldset>
 
@@ -211,9 +216,6 @@ export default function NatalFormPage() {
         <button className="btn btn-primary" type="submit">
           Calcular mi carta
         </button>
-        <Link className="text-link" to="/">
-          Volver al inicio
-        </Link>
       </form>
     </Shell>
   );

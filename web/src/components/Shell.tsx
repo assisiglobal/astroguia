@@ -33,10 +33,10 @@ export default function Shell({ title, children, admin = false, wide = false, ho
   return (
     <div className={["shell", wide ? "wide" : "", home ? "shell-home" : ""].filter(Boolean).join(" ")}>
       <header className="topbar">
-        <Link to="/" className="brand" aria-label="Astroguía">
+        <Link to="/" className="brand" aria-label="Astroguia">
           <img className="brand-mark" src={marca} alt="" />
           <span className="brand-text">
-            <span className="brand-name">AstroGuía</span>
+            <span className="brand-name">AstroGuia</span>
             <span className="brand-line">Estudio astrológico, místico y predictivo</span>
           </span>
         </Link>
