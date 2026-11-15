@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import NatalSheet from "../components/NatalSheet";
-import { NatalError, postNatal, readNatalSession, saveNatalSession } from "../lib/natal";
+import NatalSheet, { type NatalSheetData } from "../components/NatalSheet";
+import { chartToSheet } from "../lib/chartSheet";
+import { postNatal, readNatalSession, saveNatalSession } from "../lib/natal";
 
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -9,6 +10,7 @@ function wait(ms: number) {
 
 export default function LoadingPage() {
   const navigate = useNavigate();
+  const [sheet, setSheet] = useState<NatalSheetData | null>(null);
   const [closing, setClosing] = useState(false);
   const [aspectsOn, setAspectsOn] = useState(false);
   const [marked, setMarked] = useState(false);
@@ -33,21 +35,23 @@ export default function LoadingPage() {
         chart = await postNatal(session.request, controller.signal);
       } catch (caught) {
         if (cancelled || (caught instanceof DOMException && caught.name === "AbortError")) return;
-        if (!session.withHouses && caught instanceof NatalError && caught.status === 400) {
-          chart = null;
-        } else {
-          failed = caught instanceof Error ? caught.message : "No pudimos calcular la carta.";
-        }
+        failed = caught instanceof Error ? caught.message : "No pudimos calcular la carta.";
       }
-
-      const elapsed = performance.now() - started;
-      await wait(Math.max(0, 3600 - elapsed));
       if (cancelled) return;
-      if (failed) {
-        setError(failed);
+      if (failed || !chart) {
+        setError(failed ?? "No pudimos calcular la carta.");
+        return;
+      }
+      const next = chartToSheet(chart, session.withHouses);
+      if (!next) {
+        setError("No pudimos armar la carta.");
         return;
       }
       saveNatalSession({ ...session, chart });
+      setSheet(next);
+      const elapsed = performance.now() - started;
+      await wait(Math.max(1600, 3600 - elapsed));
+      if (cancelled) return;
       setClosing(true);
       await wait(950);
       if (cancelled) return;
@@ -69,7 +73,7 @@ export default function LoadingPage() {
   return (
     <div className={["loading-screen", closing ? "is-closing" : "", marked ? "is-done" : ""].filter(Boolean).join(" ")}>
       <div className="wheel">
-        <NatalSheet mode="orbit" settle={closing} showAspects={aspectsOn} />
+        {sheet ? <NatalSheet data={sheet} mode="orbit" settle={closing} showAspects={aspectsOn} /> : null}
       </div>
       <h1 aria-live="polite">{marked ? "Listo" : "Estamos leyendo tu cielo"}</h1>
       {error ? (

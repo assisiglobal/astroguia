@@ -8,16 +8,43 @@ export interface NatalRequest {
   city: string;
 }
 
-export interface NatalAngle {
+export interface NatalPosition {
   sign: string | null;
   degree: number | null;
+  longitude: number | null;
+  house: number | null;
+  retrograde: boolean | null;
+}
+
+export interface NatalAngle {
+  sign: string;
+  degree: number;
+  longitude: number;
+}
+
+export interface NatalHouse {
+  startLongitude: number;
+  endLongitude: number;
+}
+
+export interface NatalAspect {
+  planet1: string;
+  planet2: string;
+  aspect: string;
+  angle: number;
+  orb: number;
 }
 
 export interface NatalChart {
-  angles?: {
-    asc?: NatalAngle;
-    mc?: NatalAngle;
+  angles: {
+    asc: NatalAngle;
+    desc: NatalAngle;
+    mc: NatalAngle;
+    ic: NatalAngle;
   };
+  planets: Record<string, NatalPosition>;
+  houses: Record<string, NatalHouse>;
+  aspects: NatalAspect[];
 }
 
 export interface NatalSession {
@@ -44,7 +71,7 @@ export function natalPayload(request: NatalRequest): Record<string, string> {
   };
   const name = request.name?.trim();
   if (name) body.name = name;
-  if (request.time) body.time = request.time;
+  body.time = request.time || "12:00";
   return body;
 }
 
@@ -86,5 +113,8 @@ export async function postNatal(request: NatalRequest, signal?: AbortSignal): Pr
         : "No pudimos calcular la carta.";
     throw new NatalError(message, response.status);
   }
-  return (body ?? {}) as NatalChart;
+  if (!body || !("planets" in body) || !body.planets || !body.angles?.asc || !body.angles.mc) {
+    throw new NatalError("La respuesta de la carta llegó incompleta.", response.status);
+  }
+  return body;
 }
