@@ -1,0 +1,220 @@
+{
+  "country": "Argentina",
+  "timezone": "America/Argentina/Buenos_Aires",
+  "utcOffsetHours": -3,
+  "provinces": [
+    {
+      "name": "Ciudad Autónoma de Buenos Aires",
+      "cities": [
+        { "name": "Buenos Aires", "lat": -34.6037, "lon": -58.3816 }
+      ]
+    },
+    {
+      "name": "Buenos Aires",
+      "cities": [
+        { "name": "La Plata", "lat": -34.9215, "lon": -57.9545 },
+        { "name": "Mar del Plata", "lat": -38.0055, "lon": -57.5426 },
+        { "name": "Bahía Blanca", "lat": -38.7196, "lon": -62.2724 },
+        { "name": "Tandil", "lat": -37.3217, "lon": -59.1332 },
+        { "name": "San Nicolás de los Arroyos", "lat": -33.3339, "lon": -60.2118 },
+        { "name": "Pergamino", "lat": -33.8894, "lon": -60.5736 },
+        { "name": "Junín", "lat": -34.5847, "lon": -60.9445 },
+        { "name": "Quilmes", "lat": -34.7207, "lon": -58.2545 },
+        { "name": "Morón", "lat": -34.6534, "lon": -58.6198 },
+        { "name": "San Isidro", "lat": -34.4708, "lon": -58.5123 },
+        { "name": "Necochea", "lat": -38.5545, "lon": -58.7396 },
+        { "name": "Olavarría", "lat": -36.8927, "lon": -60.3225 }
+      ]
+    },
+    {
+      "name": "Catamarca",
+      "cities": [
+        { "name": "San Fernando del Valle de Catamarca", "lat": -28.4696, "lon": -65.7852 },
+        { "name": "Andalgalá", "lat": -27.5833, "lon": -66.3167 },
+        { "name": "Belén", "lat": -27.65, "lon": -67.0333 }
+      ]
+    },
+    {
+      "name": "Chaco",
+      "cities": [
+        { "name": "Resistencia", "lat": -27.4514, "lon": -58.9867 },
+        { "name": "Presidencia Roque Sáenz Peña", "lat": -26.7852, "lon": -60.4388 },
+        { "name": "Villa Ángela", "lat": -27.5747, "lon": -60.7156 }
+      ]
+    },
+    {
+      "name": "Chubut",
+      "cities": [
+        { "name": "Rawson", "lat": -43.3002, "lon": -65.1023 },
+        { "name": "Comodoro Rivadavia", "lat": -45.8641, "lon": -67.4966 },
+        { "name": "Trelew", "lat": -43.2489, "lon": -65.3051 },
+        { "name": "Puerto Madryn", "lat": -42.7692, "lon": -65.0385 },
+        { "name": "Esquel", "lat": -42.9109, "lon": -71.3151 }
+      ]
+    },
+    {
+      "name": "Córdoba",
+      "cities": [
+        { "name": "Córdoba", "lat": -31.4201, "lon": -64.1888 },
+        { "name": "Río Cuarto", "lat": -33.1301, "lon": -64.3499 },
+        { "name": "Villa María", "lat": -32.4103, "lon": -63.2401 },
+        { "name": "San Francisco", "lat": -31.4291, "lon": -62.0838 },
+        { "name": "Villa Carlos Paz", "lat": -31.4241, "lon": -64.4977 }
+      ]
+    },
+    {
+      "name": "Corrientes",
+      "cities": [
+        { "name": "Corrientes", "lat": -27.4692, "lon": -58.8306 },
+        { "name": "Goya", "lat": -29.14, "lon": -59.2626 },
+        { "name": "Paso de los Libres", "lat": -29.7128, "lon": -57.0881 },
+        { "name": "Mercedes", "lat": -29.1833, "lon": -58.0833 }
+      ]
+    },
+    {
+      "name": "Entre Ríos",
+      "cities": [
+        { "name": "Paraná", "lat": -31.7413, "lon": -60.5115 },
+        { "name": "Concordia", "lat": -31.393, "lon": -58.0209 },
+        { "name": "Gualeguaychú", "lat": -33.0093, "lon": -58.5172 },
+        { "name": "Concepción del Uruguay", "lat": -32.4825, "lon": -58.2306 }
+      ]
+    },
+    {
+      "name": "Formosa",
+      "cities": [
+        { "name": "Formosa", "lat": -26.1849, "lon": -58.1731 },
+        { "name": "Clorinda", "lat": -25.2856, "lon": -57.7175 },
+        { "name": "Pirané", "lat": -25.7333, "lon": -59.1 }
+      ]
+    },
+    {
+      "name": "Jujuy",
+      "cities": [
+        { "name": "San Salvador de Jujuy", "lat": -24.1858, "lon": -65.2995 },
+        { "name": "San Pedro de Jujuy", "lat": -24.2333, "lon": -64.8667 },
+        { "name": "Palpalá", "lat": -24.2557, "lon": -65.2072 },
+        { "name": "La Quiaca", "lat": -22.1053, "lon": -65.5964 }
+      ]
+    },
+    {
+      "name": "La Pampa",
+      "cities": [
+        { "name": "Santa Rosa", "lat": -36.6167, "lon": -64.2833 },
+        { "name": "General Pico", "lat": -35.6566, "lon": -63.7568 }
+      ]
+    },
+    {
+      "name": "La Rioja",
+      "cities": [
+        { "name": "La Rioja", "lat": -29.4131, "lon": -66.8558 },
+        { "name": "Chilecito", "lat": -29.1622, "lon": -67.4966 },
+        { "name": "Aimogasta", "lat": -28.5667, "lon": -66.8167 }
+      ]
+    },
+    {
+      "name": "Mendoza",
+      "cities": [
+        { "name": "Mendoza", "lat": -32.8895, "lon": -68.8458 },
+        { "name": "San Rafael", "lat": -34.6177, "lon": -68.3301 },
+        { "name": "San Martín", "lat": -33.0808, "lon": -68.4681 },
+        { "name": "Malargüe", "lat": -35.4756, "lon": -69.5844 }
+      ]
+    },
+    {
+      "name": "Misiones",
+      "cities": [
+        { "name": "Posadas", "lat": -27.3671, "lon": -55.8961 },
+        { "name": "Oberá", "lat": -27.4871, "lon": -55.1199 },
+        { "name": "Eldorado", "lat": -26.4009, "lon": -54.6297 },
+        { "name": "Puerto Iguazú", "lat": -25.5983, "lon": -54.5735 }
+      ]
+    },
+    {
+      "name": "Neuquén",
+      "cities": [
+        { "name": "Neuquén", "lat": -38.9516, "lon": -68.0591 },
+        { "name": "Cutral Có", "lat": -38.9339, "lon": -69.2306 },
+        { "name": "San Martín de los Andes", "lat": -40.1579, "lon": -71.3534 },
+        { "name": "Zapala", "lat": -38.8996, "lon": -70.0611 }
+      ]
+    },
+    {
+      "name": "Río Negro",
+      "cities": [
+        { "name": "Viedma", "lat": -40.8135, "lon": -62.9967 },
+        { "name": "San Carlos de Bariloche", "lat": -41.1335, "lon": -71.3103 },
+        { "name": "General Roca", "lat": -39.0333, "lon": -67.5833 },
+        { "name": "Cipolletti", "lat": -38.9333, "lon": -67.9833 }
+      ]
+    },
+    {
+      "name": "Salta",
+      "cities": [
+        { "name": "Salta", "lat": -24.7859, "lon": -65.4117 },
+        { "name": "San Ramón de la Nueva Orán", "lat": -23.1367, "lon": -64.3225 },
+        { "name": "Tartagal", "lat": -22.5167, "lon": -63.8 },
+        { "name": "Cafayate", "lat": -26.0731, "lon": -65.9761 }
+      ]
+    },
+    {
+      "name": "San Juan",
+      "cities": [
+        { "name": "San Juan", "lat": -31.5375, "lon": -68.5364 },
+        { "name": "Rawson", "lat": -31.5833, "lon": -68.5333 },
+        { "name": "Chimbas", "lat": -31.4833, "lon": -68.5333 }
+      ]
+    },
+    {
+      "name": "San Luis",
+      "cities": [
+        { "name": "San Luis", "lat": -33.2951, "lon": -66.3356 },
+        { "name": "Villa Mercedes", "lat": -33.6754, "lon": -65.4576 },
+        { "name": "Merlo", "lat": -32.3453, "lon": -65.0206 }
+      ]
+    },
+    {
+      "name": "Santa Cruz",
+      "cities": [
+        { "name": "Río Gallegos", "lat": -51.6226, "lon": -69.2181 },
+        { "name": "Caleta Olivia", "lat": -46.4396, "lon": -67.5285 },
+        { "name": "El Calafate", "lat": -50.3379, "lon": -72.2648 }
+      ]
+    },
+    {
+      "name": "Santa Fe",
+      "cities": [
+        { "name": "Santa Fe", "lat": -31.6333, "lon": -60.7 },
+        { "name": "Rosario", "lat": -32.9442, "lon": -60.6505 },
+        { "name": "Rafaela", "lat": -31.2503, "lon": -61.4867 },
+        { "name": "Venado Tuerto", "lat": -33.7458, "lon": -61.9678 },
+        { "name": "Reconquista", "lat": -29.1494, "lon": -59.6497 }
+      ]
+    },
+    {
+      "name": "Santiago del Estero",
+      "cities": [
+        { "name": "Santiago del Estero", "lat": -27.7951, "lon": -64.2615 },
+        { "name": "La Banda", "lat": -27.7333, "lon": -64.25 },
+        { "name": "Termas de Río Hondo", "lat": -27.4936, "lon": -64.8583 }
+      ]
+    },
+    {
+      "name": "Tierra del Fuego",
+      "cities": [
+        { "name": "Ushuaia", "lat": -54.8019, "lon": -68.303 },
+        { "name": "Río Grande", "lat": -53.7877, "lon": -67.7093 },
+        { "name": "Tolhuin", "lat": -54.5085, "lon": -67.1958 }
+      ]
+    },
+    {
+      "name": "Tucumán",
+      "cities": [
+        { "name": "San Miguel de Tucumán", "lat": -26.8083, "lon": -65.2176 },
+        { "name": "Yerba Buena", "lat": -26.8154, "lon": -65.3172 },
+        { "name": "Concepción", "lat": -27.3444, "lon": -65.5936 },
+        { "name": "Tafí Viejo", "lat": -26.7333, "lon": -65.2667 }
+      ]
+    }
+  ]
+}
