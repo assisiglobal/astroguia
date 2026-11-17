@@ -231,8 +231,7 @@ function usePlanetSpin(active: boolean, settle: boolean) {
         if (t < 1) frame = requestAnimationFrame(tick);
         return;
       }
-      const speed = value > 40 ? 22 : 7;
-      value = Math.max(16, value - speed * dt);
+      value = (value + 42 * dt) % 360;
       paint(value);
       frame = requestAnimationFrame(tick);
     };

@@ -47,10 +47,21 @@ export interface NatalChart {
   aspects: NatalAspect[];
 }
 
+export interface ReadingArea {
+  title: string;
+  text: string;
+}
+
+export interface NatalReading {
+  synthesis: string;
+  areas: ReadingArea[];
+}
+
 export interface NatalSession {
   request: NatalRequest;
   withHouses: boolean;
   chart: NatalChart | null;
+  reading?: NatalReading | null;
 }
 
 export class NatalError extends Error {
@@ -75,6 +86,15 @@ export function natalPayload(request: NatalRequest): Record<string, string> {
   return body;
 }
 
+function isReading(value: NatalSession["reading"]): value is NatalReading {
+  if (!value || typeof value.synthesis !== "string" || !value.synthesis.trim()) return false;
+  return (
+    Array.isArray(value.areas) &&
+    value.areas.length === 7 &&
+    value.areas.every((area) => typeof area?.title === "string" && typeof area?.text === "string" && area.text.trim())
+  );
+}
+
 export function saveNatalSession(session: NatalSession): void {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
@@ -85,6 +105,7 @@ export function readNatalSession(): NatalSession | null {
   try {
     const parsed = JSON.parse(raw) as NatalSession;
     if (!parsed?.request?.date || !parsed.request.province || !parsed.request.city) return null;
+    if (parsed.reading && !isReading(parsed.reading)) parsed.reading = null;
     return parsed;
   } catch {
     return null;

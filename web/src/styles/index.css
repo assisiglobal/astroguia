@@ -191,6 +191,15 @@ html[data-surface="admin"] .brand-line { color: #555; }
 .intro-block { display: flex; flex-direction: column; gap: 0.7rem; }
 .intro-block p, .prose { color: var(--muted); font-size: 1.125rem; }
 .prose { max-width: 38rem; }
+.prose p + p,
+.fold-panel p + p { margin-top: 0.9rem; }
+.reading-copy {
+  text-align: justify;
+  text-align-last: start;
+  hyphens: auto;
+  hyphenate-limit-chars: 7 3 3;
+  text-wrap: pretty;
+}
 
 .theme-toggle, .btn, .choice, .suggestions button, .field input, .field select {
   border: 1px solid var(--line);
@@ -323,6 +332,7 @@ html[data-theme="day"] .badge { color: #6b3a5a; }
   padding: 0.85rem 0;
   border-top: 1px solid #e5e5e5;
 }
+.admin-row p { color: var(--muted); }
 .admin-switchline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .switch { position: relative; width: 44px; height: 26px; flex: 0 0 auto; }
 .switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; z-index: 1; }
@@ -421,7 +431,7 @@ html[data-theme="night"] .chart-slot .natal-sheet::before {
 .chart-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; font-weight: 600; }
 .folds { border-top: 1px solid var(--line); }
 .fold { border-bottom: 1px solid var(--line); }
-.fold button {
+.fold > h2 > button {
   width: 100%;
   min-height: 3.6rem;
   display: flex;
@@ -436,6 +446,52 @@ html[data-theme="night"] .chart-slot .natal-sheet::before {
   font-size: 1.5rem;
   text-align: left;
 }
+.term {
+  position: relative;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentColor 70%, transparent);
+  cursor: pointer;
+}
+.term-pop {
+  display: none;
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  width: max-content;
+  max-width: min(16.5rem, 72vw);
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 10px 28px rgba(36, 16, 24, 0.18);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  text-align-last: auto;
+  hyphens: manual;
+  text-wrap: wrap;
+  white-space: normal;
+}
+@media (hover: hover) and (pointer: fine) {
+  .term:hover .term-pop,
+  .term:focus-visible .term-pop { display: block; }
+}
+.term.is-open .term-pop { display: block; }
 .fold-panel { padding: 0 0 1rem; color: var(--muted); }
 
 .loading-screen {

@@ -3,6 +3,15 @@ import { useNavigate } from "react-router";
 import Shell from "../components/Shell";
 import { isAdmin, loginAdmin, logoutAdmin } from "../lib/adminSession";
 import { useFeatures, type Feature } from "../lib/features";
+import {
+  loadInterpretationSettings,
+  MODEL_OPTIONS,
+  saveInterpretationSettings,
+  type InterpretCloseness,
+  type InterpretModel,
+  type InterpretationSettings,
+  type InterpretTone,
+} from "../lib/interpretation";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -12,6 +21,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Feature[]>(features);
+  const [reading, setReading] = useState<InterpretationSettings>(loadInterpretationSettings);
   const [formError, setFormError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -33,6 +43,12 @@ export default function AdminPage() {
     setDraft((current) => current.map((feature) => (feature.id === id ? { ...feature, ...patch } : feature)));
   }
 
+  function updateReading(patch: Partial<InterpretationSettings>) {
+    setSaved(false);
+    setFormError(null);
+    setReading((current) => ({ ...current, ...patch }));
+  }
+
   function onSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (draft.some((feature) => !feature.title.trim())) {
@@ -46,6 +62,7 @@ export default function AdminPage() {
       line: feature.line.trim(),
     }));
     save(next);
+    saveInterpretationSettings(reading);
     setDraft(next);
     setSaved(true);
   }
@@ -151,6 +168,79 @@ export default function AdminPage() {
             </label>
           </section>
         ))}
+        <section className="admin-row">
+          <h2>Interpretación</h2>
+          <div className="admin-switchline">
+            <strong>Modo prueba interpretación</strong>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={reading.trial}
+                aria-label="Modo prueba interpretación"
+                onChange={(event) => updateReading({ trial: event.target.checked })}
+              />
+              <span />
+            </label>
+          </div>
+          <p>Encendido no llama a la IA y muestra el relleno. Apagado llama al modelo.</p>
+          <label className="field" htmlFor="modelo">
+            <span>Modelo</span>
+            <select
+              id="modelo"
+              value={reading.model}
+              onChange={(event) => updateReading({ model: event.target.value as InterpretModel })}
+            >
+              {MODEL_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <fieldset className="stack">
+            <legend>Tono</legend>
+            {(
+              [
+                ["alto", "Alto"],
+                ["medio", "Medio"],
+                ["bajo", "Bajo"],
+              ] as const
+            ).map(([value, label]) => (
+              <label className="choice" key={value}>
+                <input
+                  type="radio"
+                  name="tono"
+                  value={value}
+                  checked={reading.tone === value}
+                  onChange={() => updateReading({ tone: value as InterpretTone })}
+                />
+                {label}
+              </label>
+            ))}
+            <p>Alto nombra aspectos. Medio nombra planetas y casas. Bajo casi no usa vocabulario técnico.</p>
+          </fieldset>
+          <fieldset className="stack">
+            <legend>Cercanía</legend>
+            {(
+              [
+                ["confianza", "Confianza"],
+                ["frialdad", "Frialdad"],
+              ] as const
+            ).map(([value, label]) => (
+              <label className="choice" key={value}>
+                <input
+                  type="radio"
+                  name="cercania"
+                  value={value}
+                  checked={reading.closeness === value}
+                  onChange={() => updateReading({ closeness: value as InterpretCloseness })}
+                />
+                {label}
+              </label>
+            ))}
+            <p>Confianza es cercana, en voseo, con la persona como sujeto. Frialdad es más de manual, con el planeta como sujeto.</p>
+          </fieldset>
+        </section>
         {formError ? (
           <p className="alert" role="alert">
             {formError}

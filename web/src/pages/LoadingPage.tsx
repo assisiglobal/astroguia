@@ -2,10 +2,36 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import NatalSheet, { type NatalSheetData } from "../components/NatalSheet";
 import { chartToSheet } from "../lib/chartSheet";
-import { postNatal, readNatalSession, saveNatalSession } from "../lib/natal";
+import { fillerReading, loadInterpretationSettings, postInterpret } from "../lib/interpretation";
+import { postNatal, readNatalSession, saveNatalSession, type NatalChart, type NatalReading } from "../lib/natal";
 
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function loadReading(
+  session: NonNullable<ReturnType<typeof readNatalSession>>,
+  chart: NatalChart,
+  signal: AbortSignal,
+): Promise<NatalReading> {
+  const settings = loadInterpretationSettings();
+  if (settings.trial) return fillerReading();
+  try {
+    return await postInterpret(
+      {
+        chart,
+        tone: settings.tone,
+        closeness: settings.closeness,
+        model: settings.model,
+        name: session.request.name,
+        hasTime: session.withHouses,
+      },
+      signal,
+    );
+  } catch (caught) {
+    if (caught instanceof DOMException && caught.name === "AbortError") throw caught;
+    return fillerReading();
+  }
 }
 
 export default function LoadingPage() {
@@ -49,17 +75,27 @@ export default function LoadingPage() {
       }
       saveNatalSession({ ...session, chart });
       setSheet(next);
-      const elapsed = performance.now() - started;
-      await wait(Math.max(1600, 3600 - elapsed));
+      const trial = loadInterpretationSettings().trial;
+      let reading: NatalReading;
+      try {
+        reading = await loadReading(session, chart, controller.signal);
+      } catch (caught) {
+        if (cancelled || (caught instanceof DOMException && caught.name === "AbortError")) return;
+        reading = fillerReading();
+      }
       if (cancelled) return;
+      if (trial) {
+        const elapsed = performance.now() - started;
+        await wait(Math.max(0, 2800 - elapsed));
+        if (cancelled) return;
+      }
+      saveNatalSession({ ...session, chart, reading });
       setClosing(true);
-      await wait(950);
-      if (cancelled) return;
       setAspectsOn(true);
-      await wait(1200);
+      await wait(900);
       if (cancelled) return;
       setMarked(true);
-      await wait(850);
+      await wait(700);
       if (!cancelled) navigate("/lectura", { replace: true });
     }
 
