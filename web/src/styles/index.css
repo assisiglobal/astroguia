@@ -354,14 +354,49 @@ html[data-theme="day"] .badge { color: #6b3a5a; }
 }
 .natal-sheet {
   width: min(100%, 36rem);
-  --sheet-paper: #fff;
+  --sheet-paper: transparent;
+  --sheet-ink: #241018;
+  --sheet-tick: #5c5166;
+  --sheet-frame: #6d6278;
+  --sheet-rim: #5a314c;
+  --sheet-cusp: #16123a;
+  --glyph-sun: #b8741d;
+  --glyph-moon: #2a1f7a;
+  --glyph-mer: #7a2a1a;
+  --glyph-ven: #7b4fb0;
+  --glyph-mar: #6b1c26;
+  --glyph-jup: #5b2060;
+  --glyph-sat: #2e6b2e;
+  --glyph-ura: #a23c9f;
+  --glyph-nep: #2f78b8;
+  --glyph-plu: #b8741d;
+  --glyph-node: #111111;
+  --glyph-chi: #7c9a22;
+  --glyph-lil: #111111;
+  --glyph-for: #d63b9a;
 }
+html[data-theme="night"] .natal-sheet {
+  --sheet-ink: #f6f1e7;
+  --sheet-frame: #f3eadc;
+  --sheet-rim: #f6f1e7;
+  --glyph-sun: #f0c27a;
+  --glyph-moon: #e4deff;
+  --glyph-mer: #f3b5a6;
+  --glyph-ven: #e4c8ff;
+  --glyph-mar: #ffb7be;
+  --glyph-jup: #f3c8f4;
+  --glyph-sat: #b7e8b2;
+  --glyph-ura: #f7c4f5;
+  --glyph-nep: #a9dbff;
+  --glyph-plu: #f0c27a;
+  --glyph-node: #f6f1e7;
+  --glyph-chi: #d7ee8a;
+  --glyph-lil: #f6f1e7;
+  --glyph-for: #ff9ad6;
+}
+html[data-theme="night"] .sheet-band-inner { fill-opacity: 0.84; }
+.chart-slot .natal-sheet,
 .loading-screen .natal-sheet {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px;
-}
-.chart-slot .natal-sheet {
   position: relative;
   background: transparent;
   --sheet-paper: transparent;
@@ -412,21 +447,19 @@ html[data-theme="night"] .chart-slot .natal-sheet::before {
   gap: 1.5rem;
   padding: 2rem 1.25rem;
   text-align: center;
-  background: #3a2240;
-  color: #f6f1e7;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--lilac) 28%, transparent), transparent 34%),
+    var(--bg);
+  color: var(--ink);
 }
 .loading-screen h1 {
   font-family: Fraunces, serif;
   font-weight: 500;
   font-size: clamp(2rem, 6vw, 3.1rem);
+  color: var(--ink);
 }
 .loading-error { width: min(100%, 24rem); }
-.loading-error .btn { background: #c6a15b; color: #3a2240; border-color: #c6a15b; }
-.loading-screen {
-  background:
-    radial-gradient(circle at 50% 42%, rgba(167, 139, 250, 0.22), transparent 34%),
-    #3a2240;
-}
+.loading-error p { color: var(--ink); }
 .wheel {
   width: min(92vw, 34rem, 68dvh);
   transition: transform 0.8s ease, opacity 0.8s ease;
@@ -438,11 +471,10 @@ html[data-theme="night"] .chart-slot .natal-sheet::before {
   animation: draw 0.6s ease forwards;
 }
 .loading-screen.is-done .natal-sheet {
-  position: relative;
   background: transparent;
   --sheet-paper: transparent;
 }
-.loading-screen.is-done .natal-sheet::before {
+html[data-theme="night"] .loading-screen.is-done .natal-sheet::before {
   content: "";
   position: absolute;
   z-index: 0;
@@ -486,12 +518,25 @@ html[data-theme="night"] .chart-slot .natal-sheet::before {
 .sky-stars circle { fill: #fff; animation: twinkle 4.4s ease-in-out infinite; }
 .natal-home { position: relative; z-index: 1; }
 .home-star { fill: #fff; animation: twinkle 3.8s ease-in-out infinite; }
-.sky-figure { pointer-events: none; }
+.sky-figure {
+  pointer-events: none;
+  filter:
+    drop-shadow(0 0 0.7px #fff)
+    drop-shadow(0 0 0.7px #fff)
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
+}
 .planet-icon { image-rendering: auto; }
 .natal-home .deg { font-size: 5px; }
 html[data-theme="day"] .sky-stars circle,
 html[data-theme="day"] .home-star { fill: #6b3a5a; }
-html[data-theme="day"] .sky-figure { filter: brightness(0) opacity(0.72); }
+html[data-theme="day"] .sky-figure {
+  opacity: 1;
+  filter:
+    brightness(0)
+    drop-shadow(0 0 0.8px #4a2340)
+    drop-shadow(0 0 0.8px #4a2340)
+    drop-shadow(0 0 1.5px rgba(74, 35, 64, 0.85));
+}
 .hero-sky::before {
   content: "";
   position: absolute;
@@ -560,15 +605,7 @@ html[data-theme="day"] .natal-chart {
   --wheel-band: #fffdf8;
   --wheel-well: rgba(247, 242, 234, 0.72);
 }
-.loading-screen .natal-chart {
-  --wheel: #f6f1e7;
-  --wheel-dim: rgba(246, 241, 231, 0.5);
-  --wheel-gold: #c6a15b;
-  --wheel-lilac: #a78bfa;
-  --wheel-band: #f4ecdc;
-  --wheel-well: rgba(58, 34, 64, 0.2);
-}
-.constellations { fill: none; stroke: var(--wheel-dim); stroke-width: 0.8; }
+.constellations { fill: none; stroke: var(--wheel); stroke-width: 1.35; opacity: 0.9; }
 .natal-live .constellations { transform-origin: 180px 180px; animation: spin 80s linear infinite; }
 .ring-draw { fill: none; stroke: var(--wheel); stroke-width: 1.1; }
 .outer { stroke-dasharray: 968; }
@@ -640,8 +677,8 @@ html[data-theme="day"] .sign { fill: #6b3a5a; }
   50% { opacity: 0.95; }
 }
 @keyframes twinkle {
-  0%, 100% { opacity: 0.28; }
-  50% { opacity: 0.95; }
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 @keyframes glow {
   0%, 100% { opacity: 0.55; transform: scale(0.96); }
