@@ -3,11 +3,16 @@
  *  - GET  /api/health          -> estado
  *  - GET  /api/locations       -> provincias y ciudades disponibles (para el form)
  *  - POST /api/natal           -> calcula la carta natal
+ *  - POST /api/interpret       -> interpreta una carta ya calculada
  */
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { computeNatalChart, type NatalInput } from "./astro.js";
+import { loadEnv } from "./env.js";
 import { getCountryData, resolveCity } from "./geo.js";
+import { InterpretError, interpretChart } from "./interpret.js";
+
+loadEnv();
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
@@ -84,6 +89,19 @@ app.post("/api/natal", (req: Request, res: Response) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Error desconocido";
     return res.status(400).json({ error: message });
+  }
+});
+
+app.post("/api/interpret", async (req: Request, res: Response) => {
+  try {
+    const reading = await interpretChart(req.body);
+    return res.json(reading);
+  } catch (err) {
+    if (err instanceof InterpretError) {
+      return res.status(err.status).json({ error: err.message });
+    }
+    const message = err instanceof Error ? err.message : "No pudimos interpretar la carta.";
+    return res.status(500).json({ error: message });
   }
 });
 

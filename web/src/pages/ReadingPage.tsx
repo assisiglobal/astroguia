@@ -1,9 +1,11 @@
 import { useId, useState, type ReactNode } from "react";
 import { Link } from "react-router";
+import GlossaryText from "../components/GlossaryText";
 import NatalSheet from "../components/NatalSheet";
 import Shell from "../components/Shell";
 import { chartToSheet } from "../lib/chartSheet";
-import { readNatalSession } from "../lib/natal";
+import { fillerReading, readingParagraphs } from "../lib/interpretation";
+import { readNatalSession, type NatalReading } from "../lib/natal";
 
 const MONTHS = [
   "enero",
@@ -59,6 +61,7 @@ export default function ReadingPage() {
 
   const { request, withHouses, chart } = session;
   const sheet = chart ? chartToSheet(chart, withHouses) : null;
+  const reading: NatalReading = session.reading ?? fillerReading();
 
   return (
     <Shell title="Interpretación">
@@ -75,26 +78,24 @@ export default function ReadingPage() {
           {sheet ? <NatalSheet data={sheet} /> : <p className="prose">No pudimos armar la carta.</p>}
         </section>
 
-        <p className="prose">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-          dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-          ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-          nulla pariatur.
-        </p>
-
-        <div className="folds">
-          <Fold title="Amor">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
+        <div className="reading-copy prose">
+          {readingParagraphs(reading.synthesis).map((paragraph, index) => (
+            <p key={`sintesis-${index}`}>
+              <GlossaryText text={paragraph} />
             </p>
-          </Fold>
-          <Fold title="Amistad">
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          </Fold>
-          <Fold title="Trabajo">
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-          </Fold>
+          ))}
+        </div>
+
+        <div className="folds reading-copy">
+          {reading.areas.map((area) => (
+            <Fold key={area.title} title={area.title}>
+              {readingParagraphs(area.text).map((paragraph, index) => (
+                <p key={`${area.title}-${index}`}>
+                  <GlossaryText text={paragraph} />
+                </p>
+              ))}
+            </Fold>
+          ))}
         </div>
 
         <Link className="btn btn-secondary" to="/carta-natal">
