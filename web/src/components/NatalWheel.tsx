@@ -93,7 +93,7 @@ export default function NatalWheel({ mode = "still", showHouses = true, homeSky 
   return (
     <svg
       className={`natal-chart natal-${mode}${homeSky ? " natal-home" : ""}`}
-      viewBox={homeSky ? "-58 -58 476 476" : "0 0 360 360"}
+      viewBox={homeSky ? "-70 -70 500 500" : "0 0 360 360"}
       role="img"
       aria-hidden="true"
     >
@@ -178,8 +178,8 @@ export default function NatalWheel({ mode = "still", showHouses = true, homeSky 
 
       {homeSky
         ? FIGURES.map((figure, index) => {
-            const [x, y] = polar(index * 30 + 15, 206);
-            const size = 48;
+            const [x, y] = polar(index * 30 + 15, 214);
+            const size = 78;
             return (
               <image
                 key={figure}

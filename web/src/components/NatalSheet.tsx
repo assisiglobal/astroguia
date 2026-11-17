@@ -159,6 +159,11 @@ function thirds(start: number, end: number): [number, number] {
   return [start + span / 3, start + (2 * span) / 3];
 }
 
+function glyphColor(id: string): string {
+  const fallback = BODY_COLOR[id] ?? "#16123A";
+  return `var(--glyph-${id}, ${fallback})`;
+}
+
 function Glyph({ id, x, y, scale, color }: { id: string; x: number; y: number; scale: number; color: string }) {
   const glyph = GLYPHS[id];
   if (!glyph) return null;
@@ -320,11 +325,11 @@ export default function NatalSheet({ data = PREVIEW_CHART, mode = "still", settl
   return (
     <div className="natal-sheet">
       <svg viewBox="0 0 1000 1000" role="img" aria-label={data.name || "Carta natal"}>
-        <rect width="1000" height="1000" fill="var(--sheet-paper, #fff)" />
+        <rect width="1000" height="1000" fill="var(--sheet-paper, transparent)" />
         {SIGNS.map((sign, index) => (
           <g key={sign} className="sheet-band">
             <path d={wedge(R1, R2, index * 30, index * 30 + 30, asc)} fill={SIGN_COLOR[sign][0]} />
-            <path d={wedge(R2, R3, index * 30, index * 30 + 30, asc)} fill={SIGN_COLOR[sign][0]} fillOpacity={0.42} />
+            <path className="sheet-band-inner" d={wedge(R2, R3, index * 30, index * 30 + 30, asc)} fill={SIGN_COLOR[sign][0]} fillOpacity={0.42} />
           </g>
         ))}
         {SIGNS.map((sign, index) => {
@@ -335,21 +340,21 @@ export default function NatalSheet({ data = PREVIEW_CHART, mode = "still", settl
             </g>
           );
         })}
-        <path className="sheet-ticks" d={ticks} stroke="#8A8498" strokeWidth={0.7} fill="none" />
-        <circle className="sheet-frame" cx={500} cy={500} r={R3} fill="var(--sheet-paper, #fff)" stroke="#C9C4D4" strokeWidth={2} />
-        <circle className="sheet-frame" cx={500} cy={500} r={R1} fill="none" stroke="#D4D2DA" strokeWidth={5} />
+        <path className="sheet-ticks" d={ticks} stroke="var(--sheet-tick, #6e687c)" strokeWidth={1.1} fill="none" />
+        <circle className="sheet-frame" cx={500} cy={500} r={R3} fill="var(--sheet-paper, transparent)" stroke="var(--sheet-frame, #8d8498)" strokeWidth={2.4} />
+        <circle className="sheet-frame sheet-rim" cx={500} cy={500} r={R1} fill="none" stroke="var(--sheet-rim, #6d6278)" strokeWidth={5} />
         {cusps.map((cusp, index) => (
           <path
             key={`cusp-${index}`}
             className="sheet-house"
             d={`M${pair(polar(R3, cusp, asc))}L${pair(polar(R1, cusp, asc))}`}
             fill="none"
-            stroke="#16123A"
-            strokeWidth={2.4}
+            stroke="var(--sheet-cusp, #16123A)"
+            strokeWidth={2.6}
           />
         ))}
         {wings.map((d, index) => (
-          <path key={`wing-${index}`} className="sheet-angle" d={d} stroke="#16123A" strokeWidth={2.4} fill="none" />
+          <path key={`wing-${index}`} className="sheet-angle" d={d} stroke="var(--sheet-ink, #16123A)" strokeWidth={2.6} fill="none" />
         ))}
         {aspectsVisible
           ? aspects.map((aspect, index) => (
@@ -397,9 +402,8 @@ export default function NatalSheet({ data = PREVIEW_CHART, mode = "still", settl
             })}
         <g ref={spinRef} transform={orbit ? "rotate(130 500 500)" : undefined}>
           {placed.map((item, index) => {
-            const color = BODY_COLOR[item.body.id] ?? "#16123A";
             const glyph = polar(300, item.placed, asc);
-            return <Glyph key={`${item.body.id}-${index}`} id={item.body.id} x={glyph[0]} y={glyph[1]} scale={1.6} color={color} />;
+            return <Glyph key={`${item.body.id}-${index}`} id={item.body.id} x={glyph[0]} y={glyph[1]} scale={1.65} color={glyphColor(item.body.id)} />;
           })}
         </g>
       </svg>
